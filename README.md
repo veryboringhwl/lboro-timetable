@@ -4,10 +4,9 @@ A script that scrapes your Loughborough University timetable directly from the o
 
 ## Credits
 
-This project is based on and inspired by **[midzdotdev/timetable-vcs](https://github.com/midzdotdev/timetable-vcs)** 
+This project is based on and inspired by **[midzdotdev/timetable-vcs](https://github.com/midzdotdev/timetable-vcs)**
 
 The script here is functionally the exact same and was written as a personal challenge to myself to write in a more modern and modular way.
-Also uses new temporal api so may only work with firefox
 
 ## Usage
 
@@ -22,3 +21,7 @@ Also uses new temporal api so may only work with firefox
 5. Paste the [script](/script.js) into the console and press **Enter**.
 
 6. A file named **`timetable.ics`** will download automatically, simply import it into your preferred calendar app.
+
+## Extra
+
+The `script-json.js` script downloads a json file containing all timetable data in JSON format. Used for my widget app [here](https://github.com/veryboringhwl/widget-app).

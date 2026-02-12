@@ -41,12 +41,6 @@
 
 		clean: (str) => str?.replace(Config.patterns.cleanText, "").trim() || "",
 
-		toICS: (temporalObj) => {
-			return temporalObj
-				.toString({ smallestUnit: "second" })
-				.replace(/[-:]/g, "");
-		},
-
 		parseWeeks: (weekStr) => {
 			const rangeStr = (weekStr.match(Config.patterns.weekRange) ?? [])[1];
 			if (!rangeStr) return [];
@@ -159,14 +153,16 @@
 							const endDateTime = startDateTime.add(cellDuration);
 
 							return {
-								uid: `${Utils.toICS(startDateTime)}-${moduleId}@lboro`,
-								stamp: Utils.toICS(Temporal.Now.zonedDateTimeISO("UTC")),
-								start: Utils.toICS(startDateTime),
-								end: Utils.toICS(endDateTime),
-								summary: moduleName,
-								location:
-									room === "Online" ? "Online" : `${room} (${building})`,
-								description: `${moduleName} (${moduleType}) with ${lecturer} in ${room} ${building}`,
+								moduleName,
+								moduleId,
+								moduleType,
+								lecturer,
+								room,
+								building,
+								weekNum,
+								day: Config.consts.days[dayIndex],
+								startDateTime,
+								endDateTime,
 							};
 						})
 						.filter(Boolean);
@@ -175,31 +171,13 @@
 
 		if (!events.length) throw new Error("No sessions found.");
 
-		const icsContent = [
-			"BEGIN:VCALENDAR",
-			"VERSION:2.0",
-			"PRODID:-//Lboro Timetable Scraper//EN",
-			...events.map((e) =>
-				[
-					"BEGIN:VEVENT",
-					`UID:${e.uid}`,
-					`DTSTAMP:${e.stamp}Z`,
-					`DTSTART:${e.start}`,
-					`DTEND:${e.end}`,
-					`SUMMARY:${e.summary}`,
-					`LOCATION:${e.location}`,
-					`DESCRIPTION:${e.description.replace(/\n/g, "\\n")}`,
-					"END:VEVENT",
-				].join("\r\n"),
-			),
-			"END:VCALENDAR",
-		].join("\r\n");
+		const jsonContent = JSON.stringify(events, null, 2);
 
 		const link = document.createElement("a");
 		link.href = URL.createObjectURL(
-			new Blob([icsContent], { type: "text/calendar" }),
+			new Blob([jsonContent], { type: "application/json" }),
 		);
-		link.download = "timetable.ics";
+		link.download = "timetable.json";
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
